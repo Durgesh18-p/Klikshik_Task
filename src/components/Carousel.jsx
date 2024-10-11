@@ -44,7 +44,7 @@ const Carousel = ({ images }) => {
         </IconButton>
       </Grid>
       <ImageList
-        cols={Math.min(5, images.length)} // Limit to 5 columns or less if fewer images
+        cols={Math.min(5, images.length)} 
         rowHeight={100}
         sx={{ mt: 2, display: "flex", justifyContent: "center" }}
       >

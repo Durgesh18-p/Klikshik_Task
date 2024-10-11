@@ -173,7 +173,6 @@ const Upload = ({ onUpload }) => {
               sx={{ width: "50%", mr: 2 }}
             />
 
-            {/* Always display Pause and Resume buttons */}
             <Button
               onClick={() => handlePause(file.name)}
               sx={{ mr: 1 }}
