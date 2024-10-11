@@ -30,27 +30,37 @@ const Carousel = ({ images }) => {
 
   return (
     <Box>
-      <Grid container justifyContent="center">
+      <Grid container justifyContent="center" alignItems="center">
         <IconButton onClick={handlePrev} color="primary">
           <ArrowBackIcon />
         </IconButton>
         <img
           src={images[selectedIndex].url}
           alt={images[selectedIndex].name}
-          style={{ maxHeight: "350px", maxWidth: "100%" }}
+          style={{ maxHeight: "350px", maxWidth: "100%", objectFit: "contain" }}
         />
         <IconButton onClick={handleNext} color="primary">
           <ArrowForwardIcon />
         </IconButton>
       </Grid>
-      <ImageList cols={5} rowHeight={100} sx={{ mt: 2 }}>
+      <ImageList
+        cols={Math.min(5, images.length)} // Limit to 5 columns or less if fewer images
+        rowHeight={100}
+        sx={{ mt: 2, display: "flex", justifyContent: "center" }}
+      >
         {images.map((image, index) => (
-          <ImageListItem key={image.name}>
+          <ImageListItem key={image.url} sx={{ maxWidth: 100 }}>
             <Button onClick={() => setSelectedIndex(index)}>
               <img
                 src={image.url}
                 alt={image.name}
-                style={{ cursor: "pointer", width: "100%", height: "auto" }}
+                style={{
+                  cursor: "pointer",
+                  width: "100%",
+                  height: "auto",
+                  border:
+                    selectedIndex === index ? "2px solid #1976d2" : "none",
+                }}
               />
             </Button>
           </ImageListItem>

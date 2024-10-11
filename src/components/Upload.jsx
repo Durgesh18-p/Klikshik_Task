@@ -16,11 +16,11 @@ const Upload = ({ onUpload }) => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [error, setError] = useState("");
   const [pausedFiles, setPausedFiles] = useState(new Set());
-  const [isUploading, setIsUploading] = useState(false); 
+  const [isUploading, setIsUploading] = useState(false);
 
   const validFileTypes = ["image/png", "image/jpeg", "image/jpg"];
-  const chunkSize = 1024 * 1024; 
-  const fileReaders = useRef({}); 
+  const chunkSize = 1024 * 1024;
+  const fileReaders = useRef({});
 
   const handleFileSelect = (event) => {
     const files = Array.from(event.target.files);
@@ -43,8 +43,8 @@ const Upload = ({ onUpload }) => {
 
     const chunk = file.slice(start, start + chunkSize);
 
-    const totalUploadTime = 5000; 
-    const chunkDuration = totalUploadTime / Math.ceil(file.size / chunkSize); 
+    const totalUploadTime = 5000;
+    const chunkDuration = totalUploadTime / Math.ceil(file.size / chunkSize);
 
     setTimeout(() => {
       reader.onloadstart = () => {
@@ -68,25 +68,25 @@ const Upload = ({ onUpload }) => {
         if (!pausedFiles.has(file.name)) {
           const newStart = start + chunkSize;
           if (newStart < file.size) {
-            uploadFile(file, newStart); 
+            uploadFile(file, newStart);
           } else {
             const uploadedImageUrl = URL.createObjectURL(file);
             setUploadedFiles((prevFiles) => [
               ...prevFiles,
               { name: file.name, url: uploadedImageUrl },
             ]);
-            onUpload([{ name: file.name, url: uploadedImageUrl }]); 
-            setIsUploading(false); 
+            onUpload([{ name: file.name, url: uploadedImageUrl }]);
+            setIsUploading(false);
           }
         }
       };
 
       reader.readAsDataURL(chunk);
-    }, chunkDuration); 
+    }, chunkDuration);
   };
 
   const handleUpload = () => {
-    setIsUploading(true); 
+    setIsUploading(true);
     selectedFiles.forEach((file) => {
       if (!pausedFiles.has(file.name)) {
         uploadFile(file);
@@ -96,9 +96,9 @@ const Upload = ({ onUpload }) => {
 
   const handlePause = (fileName) => {
     pausedFiles.add(fileName);
-    setPausedFiles(new Set(pausedFiles)); 
+    setPausedFiles(new Set(pausedFiles));
     if (fileReaders.current[fileName]) {
-      fileReaders.current[fileName].abort(); 
+      fileReaders.current[fileName].abort();
     }
   };
 
@@ -137,7 +137,7 @@ const Upload = ({ onUpload }) => {
             mt: 2,
             mr: 2,
           }}
-          disabled={isUploading} 
+          disabled={isUploading}
         >
           Select Files
         </Button>
@@ -152,7 +152,7 @@ const Upload = ({ onUpload }) => {
       <Button
         variant="contained"
         onClick={handleUpload}
-        disabled={selectedFiles.length === 0 || error !== "" || isUploading} 
+        disabled={selectedFiles.length === 0 || error !== "" || isUploading}
         sx={{
           bgcolor: "#ffc107",
           color: "#0f0f0f",
@@ -172,14 +172,27 @@ const Upload = ({ onUpload }) => {
               value={uploadProgress[file.name]?.progress || 0}
               sx={{ width: "50%", mr: 2 }}
             />
-            {isUploading && uploadProgress[file.name]?.progress < 100 && (
-              <>
-                <Button onClick={() => handlePause(file.name)} sx={{ mr: 1 }}>
-                  Pause
-                </Button>
-                <Button onClick={() => handleResume(file.name)}>Resume</Button>
-              </>
-            )}
+
+            {/* Always display Pause and Resume buttons */}
+            <Button
+              onClick={() => handlePause(file.name)}
+              sx={{ mr: 1 }}
+              disabled={
+                uploadProgress[file.name]?.progress === 100 ||
+                pausedFiles.has(file.name)
+              }
+            >
+              Pause
+            </Button>
+            <Button
+              onClick={() => handleResume(file.name)}
+              disabled={
+                !pausedFiles.has(file.name) ||
+                uploadProgress[file.name]?.progress === 100
+              }
+            >
+              Resume
+            </Button>
           </ListItem>
         ))}
       </List>
